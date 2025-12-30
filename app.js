@@ -1,13 +1,19 @@
 const cards = [
   {
-    jp: "もう少しで終わります。",
+    jp: "もう少しで{x}。",
     en: "I'm almost {x}.",
-    slots: ["done", "finished"]
+    slots: [
+      { jp: "終わります", en: "done" },
+      { jp: "準備ができます", en: "ready" }
+    ]
   },
   {
-    jp: "少し時間ありますか？",
+    jp: "少し{x}ありますか？",
     en: "Do you have {x}?",
-    slots: ["a minute", "a second"]
+    slots: [
+      { jp: "時間", en: "a minute" },
+      { jp: "少し時間", en: "a second" }
+    ]
   },
   {
     jp: "お待たせしました。",
@@ -18,6 +24,7 @@ const cards = [
 let index = 0;
 let revealed = false;
 let currentAnswer = "";
+let currentJp = "";
 
 const jpEl = document.getElementById("jp");
 const enEl = document.getElementById("en");
@@ -32,18 +39,22 @@ function pickSlot(card) {
 
 function render() {
   const card = cards[index];
-  jpEl.textContent = card.jp;
+  const slot = pickSlot(card);
 
-  if (card.slots) {
-    const slot = pickSlot(card);
-    currentAnswer = card.en.replace("{x}", slot);
+  if (slot) {
+    currentJp = card.jp.replace("{x}", slot.jp);
+    currentAnswer = card.en.replace("{x}", slot.en);
 
+    jpEl.textContent = currentJp;
     enEl.textContent = revealed
       ? currentAnswer
       : card.en.replace("{x}", "___");
   } else {
+    currentJp = card.jp;
     currentAnswer = card.en;
-    enEl.textContent = revealed ? card.en : "タップして答え";
+
+    jpEl.textContent = currentJp;
+    enEl.textContent = revealed ? currentAnswer : "タップして答え";
   }
 }
 
